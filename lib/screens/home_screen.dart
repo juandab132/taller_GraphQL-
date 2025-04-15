@@ -1,54 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import 'package:app_graphql/controllers/user_controller.dart';
-import 'package:app_graphql/screens/user_detail_screen.dart';
-import 'package:app_graphql/widgets/user_card.dart';
+import 'package:app_graphql/controllers/country_controller.dart';
+import 'package:app_graphql/widgets/country_card.dart';
+import 'package:app_graphql/screens/country_detail_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  final UserController userController = Get.find<UserController>();
-
-  HomeScreen({super.key});
+  final CountryController controller = Get.find<CountryController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('GraphQL Users'), elevation: 2),
+      appBar: AppBar(title: Text('Países (GraphQL)')),
       body: RefreshIndicator(
-        onRefresh: () => userController.fetchUsers(),
+        onRefresh: () => controller.fetchCountries(),
         child: Obx(() {
-          if (userController.isLoading.value) {
+          if (controller.isLoading.value) {
             return Center(child: CircularProgressIndicator());
-          } else if (userController.error.value.isNotEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Error: ${userController.error.value}',
-                    style: TextStyle(color: Colors.red),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => userController.fetchUsers(),
-                    child: Text('Reintentar'),
-                  ),
-                ],
-              ),
-            );
-          } else if (userController.users.isEmpty) {
-            return Center(child: Text('No hay usuarios disponibles'));
+          } else if (controller.error.isNotEmpty) {
+            return Center(child: Text('Error: ${controller.error}'));
+          } else if (controller.countries.isEmpty) {
+            return Center(child: Text('No hay países disponibles'));
           } else {
             return ListView.builder(
-              padding: EdgeInsets.all(16),
-              itemCount: userController.users.length,
+              padding: EdgeInsets.all(12),
+              itemCount: controller.countries.length,
               itemBuilder: (context, index) {
-                final user = userController.users[index];
-                return UserCard(
-                  user: user,
+                final country = controller.countries[index];
+                return CountryCard(
+                  country: country,
                   onTap: () {
-                    Get.to(() => UserDetailScreen(user: user));
+                    Get.to(() => CountryDetailScreen(country: country));
                   },
                 );
               },
